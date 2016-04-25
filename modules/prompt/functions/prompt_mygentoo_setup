@@ -1,0 +1,39 @@
+# My gentoo prompt theme
+
+prompt_mygentoo_help () {
+  cat <<'EOF'
+This prompt is color-scheme-able.  You can invoke it thus:
+
+  prompt mygentoo [<promptcolor> [<usercolor> [<rootcolor>]]]
+
+EOF
+}
+
+prompt_mygentoo_setup () {
+  local prompt_mygentoo_prompt=${1:-'blue'}
+  local prompt_mygentoo_user=${2:-'green'}
+  local prompt_mygentoo_root=${3:-'red'}
+
+  if [ "$USER" = 'root' ]
+  then
+    local base_prompt="%B%F{$prompt_mygentoo_root}%m%k "
+  else
+    local base_prompt="%B%F{$prompt_mygentoo_user}%n%f%F{$prompt_mygentoo_prompt}@%f%b%7F%m%f%k "
+  fi
+  local post_prompt="%b%f%k"
+
+  #setopt noxtrace localoptions
+
+  local path_prompt="%B%F{$prompt_mygentoo_prompt}%1~%f%F{yellow}%(?.. %?)%f%F{$prompt_mygentoo_prompt}"
+  typeset -g PS1="$base_prompt$path_prompt %# $post_prompt"
+  typeset -g PS2="$base_prompt$path_prompt %_> $post_prompt"
+  typeset -g PS3="$base_prompt$path_prompt ?# $post_prompt"
+
+  add-zsh-hook precmd prompt_mygentoo_precmd
+}
+
+prompt_mygentoo_precmd() {
+  echo -en "\u2514"; eval printf \"%.0s\\u2508\" {1..$(($COLUMNS-15))}; echo -e "(\e[31m`date +%T`\e[39m)\u2508\u2508\u2508\u2518"
+}
+
+prompt_mygentoo_setup "$@"
